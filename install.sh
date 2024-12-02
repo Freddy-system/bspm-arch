@@ -105,7 +105,8 @@ sudo pacman -S unzip p7zip tar --noconfirm
 
 # Crear el archivo de sesión para BSPWM
 echo "Creando archivo de sesión para BSPWM..."
-cat <<EOL > /usr/share/xsessions/bspwm.desktop
+sudo mkdir -p /usr/share/xsessions
+sudo tee /usr/share/xsessions/bspwm.desktop > /dev/null <<EOL
 [Desktop Entry]
 Name=BSPWM
 Comment=Binary Space Partitioning Window Manager
@@ -118,14 +119,14 @@ echo "Configurando SDDM para usar BSPWM..."
 if [ -f /etc/sddm.conf ]; then
   # Si el archivo de configuración existe, modifica la sección Autologin
   if grep -q "\[Autologin\]" /etc/sddm.conf; then
-    sed -i '/^\[Autologin\]/,/^$/ s/^Session=.*/Session=bspwm/' /etc/sddm.conf
+    sudo sed -i '/^\[Autologin\]/,/^$/ s/^Session=.*/Session=bspwm/' /etc/sddm.conf
   else
-    echo -e "\n[Autologin]\nSession=bspwm" >> /etc/sddm.conf
+    echo -e "\n[Autologin]\nSession=bspwm" | sudo tee -a /etc/sddm.conf > /dev/null
   fi
 else
   # Si el archivo de configuración no existe, crea uno nuevo
-  mkdir -p /etc/sddm.conf.d
-  cat <<EOL > /etc/sddm.conf.d/autologin.conf
+  sudo mkdir -p /etc/sddm.conf.d
+  sudo tee /etc/sddm.conf.d/autologin.conf > /dev/null <<EOL
 [Autologin]
 Session=bspwm
 EOL
