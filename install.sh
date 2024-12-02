@@ -87,10 +87,10 @@ sudo systemctl enable bluetooth.service
 echo "Setting Zsh as the default shell..."
 chsh -s $(which zsh)
 
-# Install Bluetooth support
-# ------------------------------------------------------
-echo "Installing Bluetooth support..."
-sudo pacman -S bluez bluez-utils pulseaudio-bluetooth --noconfirm
+# Instalar y habilitar soporte para Bluetooth
+sudo pacman -S --noconfirm bluez bluez-utils pulseaudio-bluetooth
+sudo systemctl enable bluetooth.service
+sudo systemctl start bluetooth.service
 
 # Install input device configuration tools
 # ------------------------------------------------------
@@ -101,6 +101,32 @@ sudo pacman -S xorg-xinput --noconfirm
 # ------------------------------------------------------
 echo "Installing archive support tools..."
 sudo pacman -S unzip p7zip tar --noconfirm
+
+# Instalar Brave Browser usando yay
+yay -S --noconfirm brave-bin
+
+# Instalar Spotify
+sudo pacman -S --noconfirm spotify
+
+# Instalar todas las dependencias necesarias
+echo "Instalando todas las dependencias necesarias..."
+sudo pacman -S --noconfirm bspwm sxhkd xorg-server xorg-xinit xorg-xrandr alacritty neovim picom polybar rofi neofetch nemo gedit networkmanager network-manager-applet pulseaudio pavucontrol ttf-dejavu ttf-liberation htop feh redshift arc-gtk-theme papirus-icon-theme bluez bluez-utils pulseaudio-bluetooth unzip p7zip tar
+
+# Configurar xinitrc para iniciar BSPWM
+if [ ! -f "$HOME/.xinitrc" ]; then
+    echo "Configurando .xinitrc para iniciar BSPWM..."
+    echo "exec bspwm" > $HOME/.xinitrc
+fi
+
+# Verificar y configurar el archivo de sesión para BSPWM
+sudo mkdir -p /usr/share/xsessions
+sudo tee /usr/share/xsessions/bspwm.desktop > /dev/null <<EOL
+[Desktop Entry]
+Name=BSPWM
+Comment=Binary Space Partitioning Window Manager
+Exec=bspwm
+Type=Application
+EOL
 
 # Verificar y configurar archivos de configuración
 if [ ! -f "$HOME/.config/bspwm/bspwmrc" ]; then
@@ -115,16 +141,7 @@ if [ ! -f "$HOME/.config/sxhkd/sxhkdrc" ]; then
 fi
 chmod +x ~/.config/sxhkd/sxhkdrc
 
-# Configurar SDDM para usar BSPWM
-sudo mkdir -p /usr/share/xsessions
-sudo tee /usr/share/xsessions/bspwm.desktop > /dev/null <<EOL
-[Desktop Entry]
-Name=BSPWM
-Comment=Binary Space Partitioning Window Manager
-Exec=bspwm
-Type=Application
-EOL
-
 # Reiniciar el sistema para aplicar cambios
 echo "Reiniciando el sistema para aplicar cambios..."
+sleep 5
 sudo reboot
