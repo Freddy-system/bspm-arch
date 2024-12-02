@@ -16,19 +16,19 @@ super + Escape
 
 # Application hotkeys
 
-## Launch Firefox
+## Launch brave
 super + e 
-	firefox
+	brave
 
 ## Launch Spotify
 super + shift + d
-	spotify
+	brave
 
 super + shift + e
-	firefox --new-window https://www.youtube.com/
+	brave --new-window https://www.youtube.com/
 
 super + shift + p
-	firefox --private-window
+	brave --private-window
 
 #
 # bspwm hotkeys
