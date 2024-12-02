@@ -57,27 +57,26 @@ sudo pacman -S --noconfirm arc-gtk-theme papirus-icon-theme
 
 # 7. Copiar archivos de configuración
 echo "Copiando archivos de configuración..."
-cp -r bspwm ~/.config/
-cp -r sxhkd ~/.config/
-cp -r alacritty ~/.config/
-cp -r nvim ~/.config/
-cp -r picom ~/.config/
-cp -r polybar ~/.config/
-cp -r rofi ~/.config/
+cp -r ~/Downloads/bspm-arch/bspwm ~/.config/
+cp -r ~/Downloads/bspm-arch/sxhkd ~/.config/
+cp -r ~/Downloads/bspm-arch/alacritty ~/.config/
+cp -r ~/Downloads/bspm-arch/nvim ~/.config/
+cp -r ~/Downloads/bspm-arch/picom ~/.config/
+cp -r ~/Downloads/bspm-arch/polybar ~/.config/
+cp -r ~/Downloads/bspm-arch/rofi ~/.config/
 
-# 8. Configurar SDDM para usar BSPWM
-# (Este paso ya está presente al final del script)
+# 8. Configurar SDDM para usar BSPWM 
 
-# 9. Verificar scripts de inicio
+# 9. Verificar scripts de inicio 
 echo "Verificando la ejecución de scripts de inicio..."
 if [ ! -f "$HOME/.config/bspwm/bspwmrc" ]; then
     echo "El archivo bspwmrc no se encuentra en ~/.config/bspwm. Copiando..."
-    cp /home/freddy/Descargas/arch/dotfiles/bspwm/bspwmrc ~/.config/bspwm/
+    cp ~/Downloads/bspm-arch/bspwm/bspwmrc ~/.config/bspwm/
 fi
 
 if [ ! -f "$HOME/.config/sxhkd/sxhkdrc" ]; then
     echo "El archivo sxhkdrc no se encuentra en ~/.config/sxhkd. Copiando..."
-    cp /home/freddy/Descargas/arch/dotfiles/sxhkd/sxhkdrc ~/.config/sxhkd/
+    cp ~/Downloads/bspm-arch/sxhkd/sxhkdrc ~/.config/sxhkd/
 fi
 
 # Habilitar servicios adicionales
@@ -103,8 +102,20 @@ sudo pacman -S xorg-xinput --noconfirm
 echo "Installing archive support tools..."
 sudo pacman -S unzip p7zip tar --noconfirm
 
-# Crear el archivo de sesión para BSPWM
-echo "Creando archivo de sesión para BSPWM..."
+# Verificar y configurar archivos de configuración
+if [ ! -f "$HOME/.config/bspwm/bspwmrc" ]; then
+    echo "El archivo bspwmrc no se encuentra en ~/.config/bspwm. Copiando..."
+    cp ~/Downloads/bspm-arch/bspwm/bspwmrc ~/.config/bspwm/
+fi
+chmod +x ~/.config/bspwm/bspwmrc
+
+if [ ! -f "$HOME/.config/sxhkd/sxhkdrc" ]; then
+    echo "El archivo sxhkdrc no se encuentra en ~/.config/sxhkd. Copiando..."
+    cp ~/Downloads/bspm-arch/sxhkd/sxhkdrc ~/.config/sxhkd/
+fi
+chmod +x ~/.config/sxhkd/sxhkdrc
+
+# Configurar SDDM para usar BSPWM
 sudo mkdir -p /usr/share/xsessions
 sudo tee /usr/share/xsessions/bspwm.desktop > /dev/null <<EOL
 [Desktop Entry]
@@ -114,23 +125,6 @@ Exec=bspwm
 Type=Application
 EOL
 
-# Configurar SDDM para usar BSPWM
-echo "Configurando SDDM para usar BSPWM..."
-if [ -f /etc/sddm.conf ]; then
-  # Si el archivo de configuración existe, modifica la sección Autologin
-  if grep -q "\[Autologin\]" /etc/sddm.conf; then
-    sudo sed -i '/^\[Autologin\]/,/^$/ s/^Session=.*/Session=bspwm/' /etc/sddm.conf
-  else
-    echo -e "\n[Autologin]\nSession=bspwm" | sudo tee -a /etc/sddm.conf > /dev/null
-  fi
-else
-  # Si el archivo de configuración no existe, crea uno nuevo
-  sudo mkdir -p /etc/sddm.conf.d
-  sudo tee /etc/sddm.conf.d/autologin.conf > /dev/null <<EOL
-[Autologin]
-Session=bspwm
-EOL
-fi
-
-# Print completion message
-echo "Installation complete! Please restart your session to apply changes."
+# Reiniciar el sistema para aplicar cambios
+echo "Reiniciando el sistema para aplicar cambios..."
+sudo reboot
