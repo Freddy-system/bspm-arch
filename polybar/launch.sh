@@ -1,12 +1,19 @@
 #!/bin/bash
 
-# Terminar instancias de polybar que estén ejecutándose
+# Terminar instancias previas de polybar
 killall -q polybar
 
-# Esperar hasta que los procesos se hayan cerrado
-while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
+# Esperar a que los procesos terminen
+while pgrep -u $UID -x polybar >/dev/null; do sleep 0.5; done
 
-# Lanzar Polybar
-polybar main 2>&1 | tee -a /tmp/polybar.log & disown
+# Detectar monitores
+if type "xrandr" > /dev/null; then
+  for m in $(xrandr --query | grep " connected" | cut -d" " -f1); do
+    MONITOR=$m polybar --reload main &
+  done
+else
+  # Si xrandr no está disponible, lanzar en el monitor principal
+  polybar --reload main &
+fi
 
-echo "Polybar lanzada..."
+echo "Polybar iniciada correctamente"
